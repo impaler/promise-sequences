@@ -1,18 +1,45 @@
+/** @module sequences */
+
 const RESOLVED           = 'resolved'
 const REJECTED           = 'rejected'
 const defaultConcurrency = 1
 
 /**
- * Invoke a series of functions that return a promise,
- * while limiting the number of concurrent promises that are invoked.
- * It returns a promise that resolves an array which contains the resolved
- * values of the promises. Any promise in the series will reject the
- * promise returned immediately just like Promise.all.
+ * This callback is invoked to provide progress information on
+ * long running a sequence. It will return the current results of promises.
  *
- * @param promises
- * @param concurrent
- * @param step a callback to report progress on each concurrent step,
- * it will return the results of promises that have been resolved
+ * @callback stepCallback
+ * @param {array} results the current results of the promises in a sequence
+ * @param {number} currentStep the current step of the sequence
+ * @param {number} totalSteps the current step of the sequence, this value is
+ * determined by the amount of promises and the concurrency limit.
+ */
+
+/**
+ * A function that returns a Promise. Putting a promise within a function
+ * lets the promises to be invoked in a sequence.
+ *
+ * @example var resolveZero = () => Promise.resolve(0)
+ * @example function() {
+ *      return new Promise.resolve(1)
+ * }
+ *
+ * @function promiseFunction
+ * @returns {Promise}
+ */
+
+/**
+ * Invoke a series of functions that return a promise, while limiting the
+ * number of concurrent promises that are invoked.
+ * It returns a promise that resolves an array which contains the resolved
+ * values of each promise in the sequence. Just like Promise.all any promise
+ * in the sequence will reject entire sequence immediately.
+ * 
+ * @param {Array.<Promise, promiseFunction>} promises to run in the sequence
+ * @param {number} concurrent=1 the concurrency limit of each parallel step
+ * @param {stepCallback} step a callback invoked on each concurrent
+ * step of the series.
+ *
  * @returns {Promise}
  */
 export function series(promises, concurrent, step) {
@@ -35,7 +62,7 @@ export function series(promises, concurrent, step) {
             currentStep++
 
             if (promises.length) {
-                concurrentPromises = invokePromises(
+                concurrentPromises = pushPromiseable(
                     promises, concurrentPromises, concurrent
                 )
                 Promise.all(concurrentPromises)
@@ -53,10 +80,11 @@ export function series(promises, concurrent, step) {
  * while limiting the number of concurrent promises that are invoked.
  * The promise returned will not reject if any promise promise fails
  *
- * @param promises
- * @param concurrent
- * @param step a callback to report progress on each concurrent step,
- * it will return the results of promises that have been resolved||rejected
+ * @param {Array.<Promise, promiseFunction>} promises to run in the sequence
+ * @param {number} concurrent=1 the concurrency limit of each parallel step
+ * @param {stepCallback} step a callback invoked on each concurrent
+ * step of the series.
+ *
  * @returns {Promise}
  */
 export function seriesSettled(promises, concurrent, step) {
@@ -78,7 +106,7 @@ export function seriesSettled(promises, concurrent, step) {
                 currentStep++
                 concurrentCounter = 0
 
-                concurrentPromises = invokePromises(
+                concurrentPromises = pushPromiseable(
                     promises, concurrentPromises, concurrent
                 )
                 for (var promise of concurrentPromises) {
@@ -105,17 +133,30 @@ export function seriesSettled(promises, concurrent, step) {
     })
 }
 
+/**
+ * Invoke an array of promises similar to Promise.all, except it will
+ * continue if any promises are rejected.
+ *
+ * @param {Array.<Promise, promiseFunction>} promises to run in the sequence
+ * @param {stepCallback} step a callback invoked on each concurrent
+ * step of the series.
+ *
+ * @returns {Promise}
+ */
 export function allSettled(promises, step) {
     return seriesSettled(promises, 0, step)
 }
 
 /**
  * Push a promise or a invoke a function that returns a promise to a given array
- * @param promiseable
- * @param promises
- * @returns {*}
+ *
+ * @param {(promiseFunction|Promise)} promiseable
+ * @param {Array.<Promise, promiseFunction>} promises array to push the pomises to
+ *
+ * @private
+ * @returns {Array.<Promise>}
  */
-function pushPromiseable(promiseable, promises) {
+function invokePromises(promiseable, promises) {
     // lets assume a function will return a promise and reject any errors
     if (typeof promiseable === 'function') {
         try {
@@ -140,15 +181,18 @@ function pushPromiseable(promiseable, promises) {
  * Invoke and push a given array of promise like objects into an array under
  * a concurrent limit.
  * an array.
- * @param promises {Array}
- * @param concurrentPromises {Array}
- * @param concurrent {Number}
- * @returns {Array}
+ *
+ * @private
+ * @param {Array.<Promise, promiseFunction>} promises to run in the sequence
+ * @param {Array.<Promise>} concurrentPromises promises that the invoked promises will
+ * be pushed upon
+ * @param {Number} concurrent the limit of promises to invoke
+ * @returns {Array.<Promise>}
  */
-function invokePromises(promises, concurrentPromises, concurrent) {
+function pushPromiseable(promises, concurrentPromises, concurrent) {
     while (concurrentPromises.length < concurrent && promises.length) {
         var promise = promises.shift()
-        promise     = pushPromiseable(promise, concurrentPromises)
+        promise     = invokePromises(promise, concurrentPromises)
     }
     return concurrentPromises;
 }
