@@ -3,20 +3,19 @@
   "version": "0.0.2",
   "description": "A utility library to handle control over sequences of promises.",
   "main": "build/promise-sequences.commonjs.js",
-  "scripts": {
-    "test": "npm run test-browser && npm run test-node",
-    "test-browser": "karma start --single-run --no-auto-watch tools/browser/webpack-karma.config.js",
-    "test-node": "npm run build-test-node && node tools/node/webpack-test.jasmine.js",
-    "test-node-watch": "node tools/node/watch-test-node.jasmine.js",
-    "build": "npm run build-node && npm run build-browser",
-    "build-node": "webpack --config tools/node/webpack-build-node.config.js",
-    "build-test-node": "webpack --config tools/node/webpack-build-tests-node.config.js",
-    "build-browser": "webpack --config tools/browser/webpack-build-browser.config.js",
-    "postinstall": "npm run build",
-    "docs": "jsdoc src/promise-sequences.js -t node_modules/minami -d docs"
-  },
   "author": "Chris Decoster",
   "license": "MIT",
+  "scripts": {
+    "test": "npm run test:browser && npm run test:node",
+    "test:browser": "karma start --single-run --no-auto-watch tools/browser/webpack-karma.config.js",
+    "test:node": "webpack --config tools/node/webpack-build-tests-node.config.js",
+    "test:node-watch": "node tools/node/watch-test-node.jasmine.js",
+    "build": "npm run build:node && npm run build:browser && npm run build:docs",
+    "build:node": "webpack --config tools/node/webpack-build-node.config.js",
+    "build:browser": "webpack --config tools/browser/webpack-build-browser.config.js",
+    "prepublish": "npm run build && npm run test",
+    "build:docs": "jsdoc src/promise-sequences.js -t node_modules/minami -d docs"
+  },
   "dependencies": { },
   "devDependencies": {
     "babel-core": "^6.22.1",
