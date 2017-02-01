@@ -6,19 +6,23 @@
   "author": "Chris Decoster",
   "license": "MIT",
   "scripts": {
-    "test": "npm run test:browser && npm run test:node && ava",
-    "test:browser": "karma start --single-run --no-auto-watch tools/browser/webpack-karma.config.js",
-    "test:node": "webpack --config tools/node/webpack-build-tests-node.config.js",
-    "test:node-watch": "node tools/node/watch-test-node.jasmine.js",
+    "test": "ava tests/**.test.js",
     "build": "npm run build:node && npm run build:browser && npm run build:docs",
     "build:node": "webpack --config tools/node/webpack-build-node.config.js",
     "build:browser": "webpack --config tools/browser/webpack-build-browser.config.js",
     "prepublish": "npm run build && npm run test",
     "build:docs": "jsdoc src/promise-sequences.js -t node_modules/minami -d docs"
   },
-  "dependencies": { },
+  "dependencies": {
+    "ava": "avajs/ava#9616dde582e5333c3528cdd217c37e5b41798c9a",
+    "ava-files": "^1.0.0"
+  },
+  "ava": {
+    "require": [
+      "babel-register"
+    ]
+  },
   "devDependencies": {
-    "ava": "avajs/ava#314f7a05bfa0f20b97192654885750237d133a18",
     "babel-core": "^6.22.1",
     "babel-loader": "^6.2.10",
     "babel-polyfill": "^6.22.0",
