@@ -4,13 +4,12 @@
   "description": "A small library to control a sequence of promises with concurrency limiting.",
   "author": "Chris Decoster",
   "license": "MIT",
-  "main": "build/promise-sequences.commonjs.js",
+  "main": "build/promise-sequences.js",
   "scripts": {
     "test": "ava tests/**.test.js",
-    "build": "npm run build-node && npm run build-browser",
-    "build-node": "webpack --config tools/node/webpack-build-node.config.js",
-    "build-test-node": "webpack --config tools/node/webpack-build-tests-node.config.js",
-    "build-browser": "webpack --config tools/browser/webpack-build-browser.config.js",
+    "build": "npm run build:node && npm run build:browser",
+    "build:node": "webpack --config scripts/webpack-build-node.config.js",
+    "build:browser": "webpack --config scripts/webpack-build-browser.config.js",
     "docs": "jsdoc src/promise-sequences.js -t node_modules/minami -d docs"
   },
   "ava": {
