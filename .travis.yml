@@ -1,0 +1,11 @@
+language: node_js
+node_js:
+  - "6"
+
+before_script:
+  - npm install --global yarn@0.18.1
+  - yarn install
+
+scripts:
+  - yarn build
+  - yarn test
