@@ -1,6 +1,6 @@
 # promise-sequences
 
-[![Build Status](https://travis-ci.org/impaler/promise-sequences.svg?branch=master)](https://travis-ci.org/impaler/promise-sequences)
+[![Build Status](https://travis-ci.org/impaler/promise-sequences.svg?branch=develop)](https://travis-ci.org/impaler/promise-sequences)
 
 A small library to control a sequence of promises with concurrency limiting.
 There are zero dependencies, it expects you are using a javascript runtime with Promise support or a polyfill.
