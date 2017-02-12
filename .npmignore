@@ -1,5 +1,7 @@
 node_modules
-build
+src
 .idea
+scripts
+tests
+.gitignore
 *-error.log
-docs
