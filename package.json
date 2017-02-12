@@ -22,10 +22,10 @@
       "@ava/stage-4"
     ]
   },
-  "dependencies": {  },
+  "dependencies": {},
   "devDependencies": {
     "@ava/babel-preset-stage-4": "^1.0.0",
-    "ava": "avajs/ava#9616dde582e5333c3528cdd217c37e5b41798c9a",
+    "ava": "^0.18.1",
     "babel-core": "6.7.2",
     "babel-loader": "6.2.4",
     "babel-polyfill": "6.7.2",
