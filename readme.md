@@ -1,5 +1,7 @@
 # promise-sequences
 
+[![Build Status](https://travis-ci.org/impaler/promise-sequences.svg?branch=master)](https://travis-ci.org/impaler/promise-sequences)
+
 A small library to control a sequence of promises with concurrency limiting.
 There are zero dependencies, it expects you are using a javascript runtime with Promise support or a polyfill.
 
@@ -30,7 +32,7 @@ seriesSettled(imageDownloadTasks, 3) // 3 at a time
 
 There are two main apis, `series` and `seriesSettled`.
 
-### `series`
+### `series(sequence[() => Promise], concurrent, stepCallback)`
 
 Just like standard `Promise.all` a series will reject on the first failure. You can easily control the concurrency with the second parameter.
 
@@ -49,7 +51,7 @@ series(fetchImages, 1)
   })
 ```
 
-### `allSettled`
+### `allSettled(sequence[() => Promise], concurrent, stepCallback)`
 
 This sequence will continue a even if one of the items in the sequence rejects. So that you can easily process the results, each item will have an object with the the `state` ('resolved'|'rejected') and the `result` (the rejected or resolved value). The parameters for concurrency are the same.
 
