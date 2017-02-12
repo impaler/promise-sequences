@@ -5,7 +5,7 @@ There are zero dependencies, it expects you are using a javascript runtime with 
 
 ## Why?
 
-When working with promise apis the standard `Promise.all([...promises])` will allow you to run promises in parallel. Controlling the limit of how many can run concurrently is not part of the api, this library offers a simple solution. For example say you want to download 100 images, 3 at a time and continue downloading if one download task throws an error. Lets see how you can do it:
+When working with promise apis the standard [`Promise.all`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all) will allow you to run promises in parallel. Controlling the limit of how many can run concurrently is not part of the api, this library offers a simple solution. For example say you want to download 100 images, 3 at a time and continue downloading if one download task throws an error. Lets see how you can do it:
 
 First, install the package from npm
 
@@ -13,7 +13,7 @@ First, install the package from npm
 npm i promise-sequences
 ```
 
-```
+```javascript
 import { seriesSettled } from 'promise-sequences'
 
 const imageDownloadTasks = [
@@ -22,8 +22,8 @@ const imageDownloadTasks = [
 ]
 
 seriesSettled(imageDownloadTasks, 3) // 3 at a time
-  .then(result => {
-    console.log(result)
+  .then(results => {
+    console.log(results)
     // now you can do what you need to with the response of the urls
   })
 ```
@@ -34,7 +34,7 @@ There are two main apis, `series` and `seriesSettled`.
 
 Just like standard `Promise.all` a series will reject on the first failure. You can easily control the concurrency with the second parameter.
 
-```
+```javascript
 import {series} from 'promise-sequences'
 
 const fetchImages = [
@@ -43,8 +43,8 @@ const fetchImages = [
 ]
 
 series(fetchImages, 1)
-  .then(result => {
-    let statusCodes = result.map(response => response.status)
+  .then(results => {
+    let statusCodes = results.map(response => response.status)
     console.log(statusCodes) // [200, 200]
   })
 ```
@@ -53,7 +53,7 @@ series(fetchImages, 1)
 
 This sequence will continue a even if one of the items in the sequence rejects. So that you can easily process the results, each item will have an object with the the `state` ('resolved'|'rejected') and the `result` (the rejected or resolved value). The parameters for concurrency are the same.
 
-```
+```javascript
 import { seriesSettled } from 'promise-sequences'
 
 const fetchImages = [
@@ -63,20 +63,20 @@ const fetchImages = [
 ]
 
 seriesSettled(fetchImages, 1)
-  .then(result => {
-    console.log(result)
-    // result will be
+  .then(results => {
+    console.log(results)
+    // results will be
       [
         {
-            result: response,
+            result: {response},
             state: 'resolved'
         },
         {
-            result: FetchError,
+            result: {FetchError},
             state: 'rejected'
         },
         {
-            result: response,
+            result: {response},
             state: 'resolved'
         },
       ]
